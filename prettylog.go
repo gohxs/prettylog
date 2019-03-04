@@ -88,11 +88,21 @@ func (p *Writter) Write(b []byte) (int, error) {
 			fmt.Println("Stack:", fname)
 		}
 	}*/
-
-	ptr, file, line, _ := runtime.Caller(3)
-
-	tname := runtime.FuncForPC(ptr).Name()
-	//fmt.Println("Tname:", tname)
+	var ptr uintptr
+	var file string
+	var line int
+	var ok bool
+	var tname string
+	for call := 3; call < 5; call++ {
+		ptr, file, line, ok = runtime.Caller(call)
+		if !ok {
+			continue
+		}
+		tname = runtime.FuncForPC(ptr).Name()
+		if !strings.HasPrefix(tname, "log") {
+			break
+		}
+	}
 
 	method := tname[strings.LastIndex(tname, ".")+1:]
 	fname := file[strings.LastIndex(file, "/")+1:]
